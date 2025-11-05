@@ -15,10 +15,10 @@ typedef enum {
     SIN = 10,
     COS = 11,
     DUMP = 12,
-    HLT = 13
+    HLT = 13,
+    NOT_FOUND = 0
 } cmd_index;
 
-elem_type get_cmd_id (char *cmd);
-void read_input_file (const char *filename, int *array);
-size_t get_text_size (const char *filename);
-elem_type *read_assemler_output_file (const char *filename);
+elem_type get_cmd_id (const char *cmd);
+void restore_input_info (const char *filename);
+void move_array_into_file (elem_type const *array, size_t const num_elements);

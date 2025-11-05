@@ -2,79 +2,142 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <math.h>
-#include "stack"
+#include "Stack/preambule.h"
 #include "config.h"
-#include "preambule.h"
+#include "CPU.h"
 
-size_t get_text_size (const char *filename) {
+void make_all_instructions (const char *filename, Stack_info *stack) {
 
-    struct stat text_stat;
-    stat (filename, &text_stat);
-    return (size_t)text_stat.st_size;
-}
-
-elem_type *read_assemler_output_file (const char *filename, size_t *n_elements) {
-
-    size_t n_elements = get_text_size(filename);
-    elem_type *assembler_output = (elem_type *)calloc (n_elements, sizeof (elem_type));
+    int array[20];
     FILE *f = fopen (filename, "rb");
-    fread (assembler_output, sizeof (elem_type), n_elements, f);
-    fclose (f);
+    fread (array, sizeof (elem_type), 10, f);
 
-    return assembler_output;
-}
+    for (size_t i = 0; i < 7; i++) {
+        printf ("%d\n", array[i]);
+    }
+    // FILE *f = fopen (filename, "rb");
 
-void make_all_instructions (const elem_type *assembler_output, const size_t n_elements, stack *stack) {
+    bool escape_flag = false;
+    int cmd = 0;
 
-    for (size_t i = 0; i < n_elements; i++) {
+    fseek(f, 0, SEEK_SET);
 
-        switch (assembler_output[i]) {
+    while (fread(&cmd, sizeof (elem_type), 1, f) == 1) {
 
-        case PUSH:
-            push_back (&stack, assembler_output[++i]);
-            break;
+        printf ("&&&&&&&&&&&\n");
 
-        case POP:
-            pop (&stack);
-            break;
+        printf ("%d\n", cmd);
+        if (escape_flag)  break;
 
-        case ADD:
-            push_back (&stack, pop (&stack) + pop (&stack));
-            i += 2;
-            break;
+        switch (cmd) {
+
+        case PUSH: {
+
+                elem_type num = 0;
+                fread(&num, sizeof (elem_type), 1, f);
+                printf ("%d\n", num);
+                push_back (stack, num);
+                break;
+            }
+
+        case POP: {
+
+                elem_type num = 0;
+                pop (stack, &num);
+                printf ("%d\n", num);
+                break;
+            }
+
+        case ADD: {
+
+                elem_type num_1 = 0, num_2 = 0;
+                pop (stack, &num_1);
+                pop (stack, &num_2);
+                printf ("%d %d\n", num_1, num_2);
+                print_stack (stack);
+                push_back (stack, num_1 + num_2);
+                break;
+            }
         
-        case SUB:
-            push_back (&stack, pop (&stack) - pop (&stack));
-            i += 2;
-            break;
+        case SUB: {
 
-        case MUL:
-            push_back (&stack, pop (&stack) * pop (&stack));
-            i += 2;
-            break;
+                elem_type num_1 = 0, num_2 = 0;
+                pop (stack, &num_1);
+                pop (stack, &num_2);
+                printf ("%d %d\n", num_1, num_2);
+                push_back (stack, num_1 - num_2);
+                break;
+            }
+
+        case MUL: {
+
+                elem_type num_1 = 0, num_2 = 0;
+                pop (stack, &num_1);
+                pop (stack, &num_2);
+                printf ("%d %d\n", num_1, num_2);
+                push_back (stack, num_1 * num_2);
+                break;
+            }
         
-        case DIV: // &&&&&&&&&&&&&&&&&& type????
-            push_back (&stack, pop (&stack) / pop (&stack));
-            i += 2;
-            break;
+        case DIV: {
 
-        case SQRT:
-            push_back (&stack, sqrt (pop (&stack)));
-            i++;
-            break;
+                elem_type num_1 = 0, num_2 = 0;
+                pop (stack, &num_1);
+                pop (stack, &num_2);
+                printf ("%d %d\n", num_1, num_2);
+                push_back (stack, num_1 / num_2);
+                break;
+            }
 
-        case SIN:
-            push_back (&stack, sin (pop (&stack)));
-            i++;
-            break;
+        case SQRT: {
 
-        case COS:
-            push_back (&stack, cos (pop (&stack)));
-            i++;
-            break;
+                elem_type num = 0;
+                pop (stack, &num);
+                printf ("%d\n", num);
+                push_back (stack, (elem_type )sqrt (num));
+                break;
+            }
+
+        case SIN: {
+
+                elem_type num = 0;
+                pop (stack, &num);
+                printf ("%d\n", num);
+                push_back (stack, (elem_type )sin (num));
+                break;
+            }
+
+        case COS: {
+
+                elem_type num = 0;
+                pop (stack, &num);
+                printf ("%d\n", num);
+                push_back (stack, (elem_type )cos (num));
+                break;
+            }
+
+        // case IN :
+        // case OUT:
+
+        case DUMP: {
+
+                printf ("***\n");
+                print_stack (stack);
+                break;
+            }
+
+        case HLT: {
+
+                printf ("###\n");
+                escape_flag = true;
+                break;
+            }
 
         default:
-            break;
+
+                break;
         }
     }
+
+    fclose (f);
 }

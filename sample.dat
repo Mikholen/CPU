@@ -1,0 +1,10 @@
+push 5
+dump
+
+push 10
+dump
+add
+
+dump
+
+hlt
