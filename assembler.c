@@ -32,6 +32,12 @@ void restore_input_info (const char *filename) {
 
         else {
 
+            if ((num_elements + 2) > text_size) {
+
+                text_size *= 2;
+                output_info = (elem_type *)realloc (output_info, text_size * sizeof (elem_type));
+            }
+
             output_info[num_elements] = get_cmd_id (cmd);
             if (output_info[num_elements] == 0) {
                 printf ("ERROR\n");
