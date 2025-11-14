@@ -5,7 +5,11 @@ int main () {
 
     char filename[] = "sample.dat";
 
-    restore_input_info (filename);
+    assembler_info assembler_struct;
+
+    assembler_constructor (&assembler_struct, filename);
+    restore_input_info (&assembler_struct);
+    assembler_destructor (&assembler_struct);
 
     // int array[20];
     // FILE *f = fopen ("out.txt", "rb");
