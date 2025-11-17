@@ -49,25 +49,25 @@ void make_all_instructions (CPU_info *CPU_struct) {
 
         case ADD: {
 
-                add_ (CPU_struct);
+                simple_operation_ (CPU_struct, ADD);
                 break;
             }
         
         case SUB: {
 
-                sub_ (CPU_struct);
+                simple_operation_ (CPU_struct, SUB);
                 break;
             }
 
         case MUL: {
 
-                mul_ (CPU_struct);
+                simple_operation_ (CPU_struct, MUL);
                 break;
             }
         
         case DIV: {
 
-                div_ (CPU_struct);
+                simple_operation_ (CPU_struct, DIV);
                 break;
             }
 
@@ -95,7 +95,14 @@ void make_all_instructions (CPU_info *CPU_struct) {
                 break;
             }
 
-        // case OUT:
+        case OUT : {
+#ifdef CHICKEN
+                printf ("%d\n", CPU_struct->stack->data[CPU_struct->stack->n_elements]);
+#else
+                printf ("%d\n", CPU_struct->stack->data[CPU_struct->stack->n_elements - 1]);
+#endif
+                break;
+            }
 
         case DUMP: {
 
@@ -141,66 +148,26 @@ void pop_ (CPU_info *CPU_struct) {
     // printf ("%d\n", num);
 }
 
-void add_ (CPU_info *CPU_struct) { // можно через if else объединить с другими операциями
+void simple_operation_ (CPU_info *CPU_struct, cmd_index CMD) {
 
     elem_type num_1 = 0, num_2 = 0;
     pop (CPU_struct->stack, &num_1);
     pop (CPU_struct->stack, &num_2);
     // printf ("%d %d\n", num_1, num_2);
-    print_stack (CPU_struct->stack);
-    push_back (CPU_struct->stack, num_1 + num_2);
+
+    if      (CMD == ADD)     push_back (CPU_struct->stack, num_1 + num_2);
+    else if (CMD == SUB)     push_back (CPU_struct->stack, num_1 - num_2);
+    else if (CMD == MUL)     push_back (CPU_struct->stack, num_1 * num_2);
+    else if (CMD == DIV)     push_back (CPU_struct->stack, num_1 / num_2);
 }
 
-void sub_ (CPU_info *CPU_struct) {
-
-    elem_type num_1 = 0, num_2 = 0;
-    pop (CPU_struct->stack, &num_1);
-    pop (CPU_struct->stack, &num_2);
-    // printf ("%d %d\n", num_1, num_2);
-    push_back (CPU_struct->stack, num_1 - num_2);
-}
-
-void mul_ (CPU_info *CPU_struct) {
-
-    elem_type num_1 = 0, num_2 = 0;
-    pop (CPU_struct->stack, &num_1);
-    pop (CPU_struct->stack, &num_2);
-    // printf ("%d %d\n", num_1, num_2);
-    push_back (CPU_struct->stack, num_1 * num_2);
-}
-
-void div_ (CPU_info *CPU_struct) {
-
-    elem_type num_1 = 0, num_2 = 0;
-    pop (CPU_struct->stack, &num_1);
-    pop (CPU_struct->stack, &num_2);
-    // printf ("%d %d\n", num_1, num_2);
-    push_back (CPU_struct->stack, num_1 / num_2);
-}
-
-void math_func_ (CPU_info *CPU_struct, double (*operation) (double)) { // попробовать объединить синус и косинус через указатель на функцию
+void math_func_ (CPU_info *CPU_struct, double (*operation) (double)) {
 
     elem_type num = 0;
     pop (CPU_struct->stack, &num);
     // printf ("%d\n", num);
     push_back (CPU_struct->stack, (elem_type )operation (num));
 }
-
-// void sin_ (CPU_info *CPU_struct) { // попробовать объединить синус и косинус через указатель на функцию
-
-//     elem_type num = 0;
-//     pop (CPU_struct->stack, &num);
-//     // printf ("%d\n", num);
-//     push_back (CPU_struct->stack, (elem_type )sin (num));
-// }
-
-// void cos_ (CPU_info *CPU_struct) { // попробовать объединить синус и косинус через указатель на функцию
-
-//     elem_type num = 0;
-//     pop (CPU_struct->stack, &num);
-//     // printf ("%d\n", num);
-//     push_back (CPU_struct->stack, (elem_type )cos (num));
-// }
 
 void in_ (CPU_info *CPU_struct) {
 
