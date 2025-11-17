@@ -9,7 +9,7 @@ typedef struct CPU_info {
     int cmd;
 } CPU_info;
 
-void constructor_CPU (const char *filename, CPU_info *CPU_struct);
+void constructor_CPU (const char *filename, CPU_info *CPU_struct, Stack_info *stack);
 void make_all_instructions (CPU_info *CPU_struct);
 void destructor_CPU (CPU_info *CPU_struct);
 void push_ (CPU_info *CPU_struct);

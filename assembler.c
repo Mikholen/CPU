@@ -74,6 +74,10 @@ void restore_input_info (assembler_info *assembler_struct) {
 
         else if (!strcmp (assembler_struct->cmd, "mul"))    other (assembler_struct, MUL);
 
+        else if (!strcmp (assembler_struct->cmd, "dump"))    other (assembler_struct, DUMP);
+
+        else if (!strcmp (assembler_struct->cmd, "hlt"))    other (assembler_struct, HLT);
+
 
         assembler_struct->num_elements++;
     }

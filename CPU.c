@@ -14,14 +14,14 @@
 //     int cmd
 // } CPU_info;
 
-void constructor_CPU (const char *filename, CPU_info *CPU_struct) {
+void constructor_CPU (const char *filename, CPU_info *CPU_struct, Stack_info *stack) {
 
     CPU_struct->file = fopen (filename, "r");
     CPU_struct->escape_flag = false;
-    Stack_info stack_tmp = {};
+
     size_t max_size = 20;
-    create_stack (&stack_tmp, max_size);
-    CPU_struct->stack = &stack_tmp;
+    create_stack (stack, max_size);
+    CPU_struct->stack = stack;
     CPU_struct->cmd = -1;
 }
 
@@ -36,8 +36,6 @@ void make_all_instructions (CPU_info *CPU_struct) {
     // }
 
     while (fread(&(CPU_struct->cmd), sizeof (elem_type), 1, CPU_struct->file) == 1) {
-
-        // printf ("&&&&&&&&&&&\n");
 
         // printf ("%d\n", CPU_struct->cmd);
         if (CPU_struct->escape_flag)  break;
@@ -104,7 +102,7 @@ void make_all_instructions (CPU_info *CPU_struct) {
         case DUMP: {
 
                 // printf ("***\n");
-                print_stack (CPU_struct->stack);
+                // print_stack (CPU_struct->stack);
                 break;
             }
 

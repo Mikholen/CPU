@@ -5,9 +5,10 @@
 int main () {
 
     const char *filename = "out.dat";
-    CPU_info CPU_struct;
+    CPU_info CPU_struct = {};
+    Stack_info stack = {};
 
-    constructor_CPU (filename, &CPU_struct);
+    constructor_CPU (filename, &CPU_struct, &stack);
 
     make_all_instructions (&CPU_struct);
 
