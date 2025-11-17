@@ -10,7 +10,7 @@ void dump (assembler_info *assembler_struct, bool sizes, bool cmd, bool array) {
 
     if (sizes) {
 
-        printf ("Text size : %ld\nNumber of elements : %ld\n", assembler_struct->text_size, assembler_struct->num_elements);
+        printf ("Text size : %lu\nNumber of elements : %lu\n", assembler_struct->text_size, assembler_struct->num_elements);
     }
 
     if (cmd) {
@@ -79,12 +79,12 @@ void restore_input_info (assembler_info *assembler_struct) {
     }
 
     move_array_into_file (assembler_struct->output_info, assembler_struct->num_elements);
-    assembler_destructor (assembler_struct);
 }
 
 void assembler_destructor (assembler_info *assembler_struct) {
 
     fclose (assembler_struct->file);
+    assembler_struct->file = NULL;
     free (assembler_struct->output_info);
 }
 

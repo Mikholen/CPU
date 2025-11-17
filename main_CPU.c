@@ -4,14 +4,14 @@
 
 int main () {
 
-    size_t max_size = 20;
-    Stack_info stack = {};
+    const char *filename = "out.dat";
+    CPU_info CPU_struct;
 
-    create_stack (&stack, max_size);
+    constructor_CPU (filename, &CPU_struct);
 
-    make_all_instructions ("out.dat", &stack);
+    make_all_instructions (&CPU_struct);
 
-    destructor (&stack);
+    destructor_CPU (&CPU_struct);
 
     return 0;
 }
