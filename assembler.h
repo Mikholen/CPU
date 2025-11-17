@@ -3,7 +3,7 @@
 #include "config.h"
 #include "enum.h"
 
-const size_t INIT_TEXT_SIZE = 10;
+const size_t INIT_TEXT_SIZE = 200;
 
 typedef struct assembler_info {
 

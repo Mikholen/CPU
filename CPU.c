@@ -3,16 +3,9 @@
 #include <sys/stat.h>
 #include <math.h>
 #include "Stack/preambule.h"
+#include "Stack/config.h"
 #include "config.h"
 #include "CPU.h"
-
-// typedef struct CPU_info {
-
-//     FILE *file;
-//     bool escape_flag;
-//     Stack_info *stack;
-//     int cmd
-// } CPU_info;
 
 void constructor_CPU (const char *filename, CPU_info *CPU_struct, Stack_info *stack) {
 
@@ -80,29 +73,34 @@ void make_all_instructions (CPU_info *CPU_struct) {
 
         case SQRT: {
 
-                sqrt_ (CPU_struct);
+                math_func_ (CPU_struct, sqrt);
                 break;
             }
 
         case SIN: {
 
-                sin_ (CPU_struct);
+                math_func_ (CPU_struct, sin);
                 break;
             }
 
         case COS: {
 
-                cos_ (CPU_struct);
+                math_func_ (CPU_struct, cos);
                 break;
             }
 
-        // case IN :
+        case IN : {
+
+                in_ (CPU_struct);
+                break;
+            }
+
         // case OUT:
 
         case DUMP: {
 
                 // printf ("***\n");
-                // print_stack (CPU_struct->stack);
+                print_stack (CPU_struct->stack);
                 break;
             }
 
@@ -143,7 +141,7 @@ void pop_ (CPU_info *CPU_struct) {
     // printf ("%d\n", num);
 }
 
-void add_ (CPU_info *CPU_struct) {
+void add_ (CPU_info *CPU_struct) { // можно через if else объединить с другими операциями
 
     elem_type num_1 = 0, num_2 = 0;
     pop (CPU_struct->stack, &num_1);
@@ -180,26 +178,34 @@ void div_ (CPU_info *CPU_struct) {
     push_back (CPU_struct->stack, num_1 / num_2);
 }
 
-void sqrt_ (CPU_info *CPU_struct) {
+void math_func_ (CPU_info *CPU_struct, double (*operation) (double)) { // попробовать объединить синус и косинус через указатель на функцию
 
     elem_type num = 0;
     pop (CPU_struct->stack, &num);
     // printf ("%d\n", num);
-    push_back (CPU_struct->stack, (elem_type )sqrt (num));
+    push_back (CPU_struct->stack, (elem_type )operation (num));
 }
 
-void sin_ (CPU_info *CPU_struct) { // попробовать объединить синус и косинус через указатель на функцию
+// void sin_ (CPU_info *CPU_struct) { // попробовать объединить синус и косинус через указатель на функцию
 
-    elem_type num = 0;
-    pop (CPU_struct->stack, &num);
-    // printf ("%d\n", num);
-    push_back (CPU_struct->stack, (elem_type )sin (num));
-}
+//     elem_type num = 0;
+//     pop (CPU_struct->stack, &num);
+//     // printf ("%d\n", num);
+//     push_back (CPU_struct->stack, (elem_type )sin (num));
+// }
 
-void cos_ (CPU_info *CPU_struct) { // попробовать объединить синус и косинус через указатель на функцию
+// void cos_ (CPU_info *CPU_struct) { // попробовать объединить синус и косинус через указатель на функцию
 
-    elem_type num = 0;
-    pop (CPU_struct->stack, &num);
-    // printf ("%d\n", num);
-    push_back (CPU_struct->stack, (elem_type )cos (num));
+//     elem_type num = 0;
+//     pop (CPU_struct->stack, &num);
+//     // printf ("%d\n", num);
+//     push_back (CPU_struct->stack, (elem_type )cos (num));
+// }
+
+void in_ (CPU_info *CPU_struct) {
+
+    int num = 0;
+    printf ("Enter number: \n");
+    scanf ("%d", &num);
+    push_back (CPU_struct->stack, num);
 }
