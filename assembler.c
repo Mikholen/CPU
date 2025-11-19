@@ -28,99 +28,79 @@ void dump (assembler_info *assembler_struct, bool sizes, bool cmd, bool array) {
     }
 }
 
-void assembler_constructor (assembler_info *assembler_struct, char *filename) {
+void assembler_constructor (assembler_info *assembler_struct, const char *filename_input, const char *filename_output) {
 
-    assembler_struct->file = fopen (filename, "r");
+    assembler_struct->file_input = fopen (filename_input, "r");
+    assembler_struct->file_output = fopen (filename_output, "wb");
     assembler_struct->text_size = INIT_TEXT_SIZE;
     assembler_struct->num_elements = 0;
     assembler_struct->output_info = (elem_type *)calloc (assembler_struct->text_size, sizeof (elem_type));
-
-    for (size_t i = 0; i < sizeof (assembler_struct->cmd) / sizeof (assembler_struct->cmd[0]); i++) {
-
-        assembler_struct->cmd[i] = '\0';
-    }
 }
 
 void restore_input_info (assembler_info *assembler_struct) {
 
-    while (fscanf (assembler_struct->file, "%s", assembler_struct->cmd) == 1) {
+    while (fscanf (assembler_struct->file_input, "%s", assembler_struct->cmd) == 1) {
 
-        if ((assembler_struct->num_elements + 3) > assembler_struct->text_size) {
+        if      (!strcmp (assembler_struct->cmd, "push"))   { push  (assembler_struct); }
 
-            reallocate_memory (assembler_struct);
-        }
+        else if (!strcmp (assembler_struct->cmd, "pop"))    { other (assembler_struct, POP); }
 
-        if      (!strcmp (assembler_struct->cmd, "push"))   push  (assembler_struct);
+        else if (!strcmp (assembler_struct->cmd, "add"))    { other (assembler_struct, ADD); }
 
-        else if (!strcmp (assembler_struct->cmd, "pop"))    other (assembler_struct, POP);
-
-        else if (!strcmp (assembler_struct->cmd, "add"))    other (assembler_struct, ADD);
-
-        else if (!strcmp (assembler_struct->cmd, "sub"))    other (assembler_struct, SUB);
+        else if (!strcmp (assembler_struct->cmd, "sub"))    { other (assembler_struct, SUB); }
         
-        else if (!strcmp (assembler_struct->cmd, "mul"))    other (assembler_struct, MUL);
+        else if (!strcmp (assembler_struct->cmd, "mul"))    { other (assembler_struct, MUL); }
 
-        else if (!strcmp (assembler_struct->cmd, "div"))    other (assembler_struct, DIV);
+        else if (!strcmp (assembler_struct->cmd, "div"))    { other (assembler_struct, DIV); }
 
-        else if (!strcmp (assembler_struct->cmd, "out"))    other (assembler_struct, OUT);
+        else if (!strcmp (assembler_struct->cmd, "out"))    { other (assembler_struct, OUT); }
 
-        else if (!strcmp (assembler_struct->cmd, "in"))     other (assembler_struct, IN);
+        else if (!strcmp (assembler_struct->cmd, "in"))     { other (assembler_struct, IN); }
 
-        else if (!strcmp (assembler_struct->cmd, "sqrt"))   other (assembler_struct, SQRT);
+        else if (!strcmp (assembler_struct->cmd, "sqrt"))   { other (assembler_struct, SQRT); }
 
-        else if (!strcmp (assembler_struct->cmd, "sin"))    other (assembler_struct, SIN);
+        else if (!strcmp (assembler_struct->cmd, "sin"))    { other (assembler_struct, SIN); }
 
-        else if (!strcmp (assembler_struct->cmd, "cos"))    other (assembler_struct, COS);
+        else if (!strcmp (assembler_struct->cmd, "cos"))    { other (assembler_struct, COS); }
 
-        else if (!strcmp (assembler_struct->cmd, "mul"))    other (assembler_struct, MUL);
+        else if (!strcmp (assembler_struct->cmd, "mul"))    { other (assembler_struct, MUL); }
 
-        else if (!strcmp (assembler_struct->cmd, "dump"))    other (assembler_struct, DUMP);
+        else if (!strcmp (assembler_struct->cmd, "dump"))   { other (assembler_struct, DUMP); }
 
-        else if (!strcmp (assembler_struct->cmd, "hlt"))    other (assembler_struct, HLT);
+        else if (!strcmp (assembler_struct->cmd, "hlt"))    { other (assembler_struct, HLT); }
 
 
         assembler_struct->num_elements++;
     }
 
-    move_array_into_file (assembler_struct->output_info, assembler_struct->num_elements);
+    fwrite (&assembler_struct->num_elements, sizeof (size_t), 1, assembler_struct->file_output);
+    fwrite (assembler_struct->output_info, sizeof (elem_type), assembler_struct->num_elements, assembler_struct->file_output);
 }
 
 void assembler_destructor (assembler_info *assembler_struct) {
 
-    fclose (assembler_struct->file);
-    assembler_struct->file = NULL;
+    fclose (assembler_struct->file_input);
+    assembler_struct->file_input = NULL;
+    fclose (assembler_struct->file_output);
+    assembler_struct->file_output = NULL;
     free (assembler_struct->output_info);
-}
-
-void move_array_into_file (elem_type const *array, size_t const num_elements) {
-
-    FILE *f = fopen ("out.dat", "wb");
-    fwrite (array, sizeof (elem_type), num_elements, f);
-    fclose(f);
 }
 
 void push (assembler_info *assembler_struct) {
 
     elem_type num;
-    fscanf (assembler_struct->file, "%d", &num);
+    fscanf (assembler_struct->file_input, "%d", &num);
 
-    if ((assembler_struct->num_elements + 3) > assembler_struct->text_size) {
+    if ((assembler_struct->num_elements + 3) > assembler_struct->text_size) { reallocate_memory (assembler_struct); }
 
-        assembler_struct->text_size *= 10;
-        assembler_struct->output_info = (elem_type *)realloc (assembler_struct->output_info, assembler_struct->text_size * sizeof (elem_type));
-    }
     assembler_struct->output_info[assembler_struct->num_elements] = PUSH;
     assembler_struct->num_elements++;
     assembler_struct->output_info[assembler_struct->num_elements] = num;
 }
 
-void other (assembler_info *assembler_struct, int cmd_id) {
+void other (assembler_info *assembler_struct, cmd_index cmd_id) {
 
-    if ((assembler_struct->num_elements + 2) > assembler_struct->text_size) {
-
-        assembler_struct->text_size *= 10;
-        assembler_struct->output_info = (elem_type *)realloc (assembler_struct->output_info, assembler_struct->text_size * sizeof (elem_type));
-    }
+    if ((assembler_struct->num_elements + 2) > assembler_struct->text_size) { reallocate_memory (assembler_struct); }
 
     assembler_struct->output_info[assembler_struct->num_elements] = cmd_id;
 }

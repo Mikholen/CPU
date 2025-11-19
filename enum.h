@@ -1,3 +1,6 @@
+#ifndef ENUM
+#define ENUM
+
 typedef enum {
 
     PUSH = 1,
@@ -15,3 +18,5 @@ typedef enum {
     HLT = 13,
     NOT_FOUND = 0
 } cmd_index;
+
+#endif

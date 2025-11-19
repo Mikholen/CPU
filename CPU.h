@@ -1,3 +1,6 @@
+#ifndef CPU
+#define CPU
+
 #include "config.h"
 #include "enum.h"
 
@@ -7,6 +10,8 @@ typedef struct CPU_info {
     bool escape_flag;
     Stack_info *stack;
     int cmd;
+    size_t data_len;
+    elem_type *data;
 } CPU_info;
 
 void constructor_CPU (const char *filename, CPU_info *CPU_struct, Stack_info *stack);
@@ -17,3 +22,5 @@ void pop_ (CPU_info *CPU_struct);
 void simple_operation_ (CPU_info *CPU_struct, cmd_index CMD);
 void math_func_ (CPU_info *CPU_struct, double (*operation) (double));
 void in_ (CPU_info *CPU_struct);
+
+#endif

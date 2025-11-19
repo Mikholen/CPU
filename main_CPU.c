@@ -2,9 +2,9 @@
 #include "Stack/preambule.h"
 #include "CPU.h"
 
-int main () {
+int main (int argc, char *argv[]) {
 
-    const char *filename = "out.dat";
+    const char *filename = argv[1];
     CPU_info CPU_struct = {};
     Stack_info stack = {};
 

@@ -9,13 +9,17 @@
 
 void constructor_CPU (const char *filename, CPU_info *CPU_struct, Stack_info *stack) {
 
-    CPU_struct->file = fopen (filename, "r");
+    CPU_struct->file = fopen (filename, "rb");
     CPU_struct->escape_flag = false;
 
     size_t max_size = 20;
     create_stack (stack, max_size);
     CPU_struct->stack = stack;
     CPU_struct->cmd = -1;
+
+    fread(&(CPU_struct->data_len), sizeof(size_t), 1, CPU_struct->file);;
+    CPU_struct->data = (elem_type *) calloc (CPU_struct->data_len, sizeof (elem_type));
+    fread(CPU_struct->data, sizeof(elem_type), CPU_struct->data_len, CPU_struct->file);
 }
 
 void make_all_instructions (CPU_info *CPU_struct) {
@@ -130,6 +134,7 @@ void destructor_CPU (CPU_info *CPU_struct) {
 
     fclose (CPU_struct->file);
     CPU_struct->file = NULL;
+    free (CPU_struct->data);
     destructor (CPU_struct->stack);
 }
 
@@ -155,10 +160,14 @@ void simple_operation_ (CPU_info *CPU_struct, cmd_index CMD) {
     pop (CPU_struct->stack, &num_2);
     // printf ("%d %d\n", num_1, num_2);
 
-    if      (CMD == ADD)     push_back (CPU_struct->stack, num_1 + num_2);
-    else if (CMD == SUB)     push_back (CPU_struct->stack, num_1 - num_2);
-    else if (CMD == MUL)     push_back (CPU_struct->stack, num_1 * num_2);
-    else if (CMD == DIV)     push_back (CPU_struct->stack, num_1 / num_2);
+    switch (CMD) {
+
+    case ADD:   { push_back (CPU_struct->stack, num_1 + num_2); break; }
+    case SUB:   { push_back (CPU_struct->stack, num_1 - num_2); break; }
+    case MUL:   { push_back (CPU_struct->stack, num_1 + num_2); break; }
+    case DIV:   { push_back (CPU_struct->stack, num_1 + num_2); break; }
+    default:    { printf ("This coomand (id %d) is not supported by function simple_operation_", CMD); }
+    }
 }
 
 void math_func_ (CPU_info *CPU_struct, double (*operation) (double)) {

@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include "assembler.h"
 
-int main () {
+int main (int argc, char *argv[]) {
 
-    char filename[] = "sample.dat";
+    const char *filename_input = argv[1];
+    const char *filename_output = argv[2];
 
-    assembler_info assembler_struct;
+    assembler_info assembler_struct = {};
 
-    assembler_constructor (&assembler_struct, filename);
+    assembler_constructor (&assembler_struct, filename_input, filename_output);
     restore_input_info (&assembler_struct);
     assembler_destructor (&assembler_struct);
 
