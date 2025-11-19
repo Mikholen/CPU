@@ -15,7 +15,7 @@ void constructor_CPU (const char *filename, CPU_info *CPU_struct, Stack_info *st
     size_t max_size = 20;
     create_stack (stack, max_size);
     CPU_struct->stack = stack;
-    CPU_struct->cmd = -1;
+    CPU_struct->position = 0;
 
     fread(&(CPU_struct->data_len), sizeof(size_t), 1, CPU_struct->file);;
     CPU_struct->data = (elem_type *) calloc (CPU_struct->data_len, sizeof (elem_type));
@@ -32,12 +32,12 @@ void make_all_instructions (CPU_info *CPU_struct) {
     //     printf ("%d\n", array[i]);
     // }
 
-    while (fread(&(CPU_struct->cmd), sizeof (elem_type), 1, CPU_struct->file) == 1) {
+    for (CPU_struct->position; CPU_struct->position < CPU_struct->data_len; CPU_struct->position++) {
 
         // printf ("%d\n", CPU_struct->cmd);
         if (CPU_struct->escape_flag)  break;
 
-        switch (CPU_struct->cmd) {
+        switch (CPU_struct->data[CPU_struct->position]) {
 
         case PUSH: {
 
@@ -141,7 +141,8 @@ void destructor_CPU (CPU_info *CPU_struct) {
 void push_ (CPU_info *CPU_struct) {
 
     elem_type num = 0;
-    fread(&num, sizeof (elem_type), 1, CPU_struct->file);
+    num = CPU_struct->data[CPU_struct->position + 1];
+    CPU_struct->position++;
     // printf ("%d\n", num);
     push_back (CPU_struct->stack, num);
 }

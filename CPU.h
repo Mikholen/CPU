@@ -9,7 +9,7 @@ typedef struct CPU_info {
     FILE *file;
     bool escape_flag;
     Stack_info *stack;
-    int cmd;
+    size_t position;
     size_t data_len;
     elem_type *data;
 } CPU_info;
