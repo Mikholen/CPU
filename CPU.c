@@ -7,6 +7,55 @@
 #include "config.h"
 #include "CPU.h"
 
+static void push_ (CPU_info *CPU_struct) {
+
+    elem_type num = 0;
+    num = CPU_struct->data[CPU_struct->position + 1];
+    CPU_struct->position++;
+    // printf ("%d\n", num);
+    push_back (CPU_struct->stack, num);
+}
+
+static void pop_ (CPU_info *CPU_struct) {
+
+    elem_type num = 0;
+    pop (CPU_struct->stack, &num);
+    // printf ("%d\n", num);
+}
+
+static void simple_operation_ (CPU_info *CPU_struct, cmd_index CMD) {
+
+    elem_type num_1 = 0, num_2 = 0;
+    pop (CPU_struct->stack, &num_1);
+    pop (CPU_struct->stack, &num_2);
+    // printf ("%d %d\n", num_1, num_2);
+
+    switch (CMD) {
+
+    case ADD:   { push_back (CPU_struct->stack, num_1 + num_2); break; }
+    case SUB:   { push_back (CPU_struct->stack, num_1 - num_2); break; }
+    case MUL:   { push_back (CPU_struct->stack, num_1 + num_2); break; }
+    case DIV:   { push_back (CPU_struct->stack, num_1 + num_2); break; }
+    default:    { printf ("This coomand (id %d) is not supported by function simple_operation_", CMD); }
+    }
+}
+
+static void math_func_ (CPU_info *CPU_struct, double (*operation) (double)) {
+
+    elem_type num = 0;
+    pop (CPU_struct->stack, &num);
+    // printf ("%d\n", num);
+    push_back (CPU_struct->stack, (elem_type )operation (num));
+}
+
+static void in_ (CPU_info *CPU_struct) {
+
+    int num = 0;
+    printf ("Enter number: \n");
+    scanf ("%d", &num);
+    push_back (CPU_struct->stack, num);
+}
+
 void dump_CPU (CPU_info *CPU_struct, bool stack, bool data, bool other) {
 
     if (stack) { 
@@ -161,53 +210,4 @@ void destructor_CPU (CPU_info *CPU_struct) {
     CPU_struct->file = NULL;
     free (CPU_struct->data);
     destructor (CPU_struct->stack);
-}
-
-void push_ (CPU_info *CPU_struct) {
-
-    elem_type num = 0;
-    num = CPU_struct->data[CPU_struct->position + 1];
-    CPU_struct->position++;
-    // printf ("%d\n", num);
-    push_back (CPU_struct->stack, num);
-}
-
-void pop_ (CPU_info *CPU_struct) {
-
-    elem_type num = 0;
-    pop (CPU_struct->stack, &num);
-    // printf ("%d\n", num);
-}
-
-void simple_operation_ (CPU_info *CPU_struct, cmd_index CMD) {
-
-    elem_type num_1 = 0, num_2 = 0;
-    pop (CPU_struct->stack, &num_1);
-    pop (CPU_struct->stack, &num_2);
-    // printf ("%d %d\n", num_1, num_2);
-
-    switch (CMD) {
-
-    case ADD:   { push_back (CPU_struct->stack, num_1 + num_2); break; }
-    case SUB:   { push_back (CPU_struct->stack, num_1 - num_2); break; }
-    case MUL:   { push_back (CPU_struct->stack, num_1 + num_2); break; }
-    case DIV:   { push_back (CPU_struct->stack, num_1 + num_2); break; }
-    default:    { printf ("This coomand (id %d) is not supported by function simple_operation_", CMD); }
-    }
-}
-
-void math_func_ (CPU_info *CPU_struct, double (*operation) (double)) {
-
-    elem_type num = 0;
-    pop (CPU_struct->stack, &num);
-    // printf ("%d\n", num);
-    push_back (CPU_struct->stack, (elem_type )operation (num));
-}
-
-void in_ (CPU_info *CPU_struct) {
-
-    int num = 0;
-    printf ("Enter number: \n");
-    scanf ("%d", &num);
-    push_back (CPU_struct->stack, num);
 }
