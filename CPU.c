@@ -7,6 +7,31 @@
 #include "config.h"
 #include "CPU.h"
 
+void dump_CPU (CPU_info *CPU_struct, bool stack, bool data, bool other) {
+
+    if (stack) { 
+
+        printf ("Stack state:\n");
+        print_stack (CPU_struct->stack);
+    }
+
+    if (data) {
+
+        printf ("Data len: %lu\n", CPU_struct->data_len);
+        printf ("Data:\n");
+
+        for (size_t i = 0; i < CPU_struct->data_len; i++) { printf ("%d ", CPU_struct->data[i]); }
+
+        printf ("\n");
+    }
+
+    if (other) { 
+        
+        printf ("Escape flag: %d\n", CPU_struct->escape_flag); 
+        printf ("Current position: %lu\n", CPU_struct->position);
+    }
+}
+
 void constructor_CPU (const char *filename, CPU_info *CPU_struct, Stack_info *stack) {
 
     CPU_struct->file = fopen (filename, "rb");
@@ -32,7 +57,7 @@ void make_all_instructions (CPU_info *CPU_struct) {
     //     printf ("%d\n", array[i]);
     // }
 
-    for (CPU_struct->position; CPU_struct->position < CPU_struct->data_len; CPU_struct->position++) {
+    for (CPU_struct->position = 0; CPU_struct->position < CPU_struct->data_len; CPU_struct->position++) {
 
         // printf ("%d\n", CPU_struct->cmd);
         if (CPU_struct->escape_flag)  break;

@@ -18,12 +18,12 @@ typedef struct assembler_info {
     char cmd[6];
 } assembler_info;
 
-void push (assembler_info *assembler_struct);
-void other (assembler_info *assembler_struct, cmd_index cmd_id);
-void reallocate_memory (assembler_info *assembler_struct);
+// void push (assembler_info *assembler_struct);
+// void other (assembler_info *assembler_struct, cmd_index cmd_id);
+// void reallocate_memory (assembler_info *assembler_struct);
 void restore_input_info (assembler_info *assembler_struct);
 void assembler_destructor (assembler_info *assembler_struct);
 void assembler_constructor (assembler_info *assembler_struct, const char *filename_input, const char *filename_output);
-void dump (assembler_info *assembler_struct, bool sizes, bool cmd, bool array);
+void dump_assembler (assembler_info *assembler_struct, bool sizes, bool cmd, bool array);
 
 #endif

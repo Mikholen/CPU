@@ -226,7 +226,7 @@ error_code_type stack_check (const Stack_info *stack) {
     return flag;
 }
 
-void dump (const error_code_type flag) {
+void dump_stack (const error_code_type flag) {
 
     if (flag & NULL_STACK_POINTER)                        printf ("Invalid input pointer for stack *-*\n");
 

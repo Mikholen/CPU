@@ -56,5 +56,5 @@ error_code_type push_back (Stack_info *stack, const elem_type element);
 error_code_type pop (Stack_info *stack, elem_type *element);
 void print_stack (const Stack_info *stack);
 error_code_type stack_check (const Stack_info *stack);
-void dump (error_code_type flag);
+void dump_stack (error_code_type flag);
 void destructor (Stack_info *stack);

@@ -6,7 +6,32 @@
 #include "assembler.h"
 #include "config.h"
 
-void dump (assembler_info *assembler_struct, bool sizes, bool cmd, bool array) {
+static void reallocate_memory (assembler_info *assembler_struct) {
+
+    assembler_struct->text_size *= 10;
+    assembler_struct->output_info = (elem_type *)realloc (assembler_struct->output_info, assembler_struct->text_size * sizeof (elem_type));
+}
+
+static void push (assembler_info *assembler_struct) {
+
+    elem_type num;
+    fscanf (assembler_struct->file_input, "%d", &num);
+
+    if ((assembler_struct->num_elements + 3) > assembler_struct->text_size) { reallocate_memory (assembler_struct); }
+
+    assembler_struct->output_info[assembler_struct->num_elements] = PUSH;
+    assembler_struct->num_elements++;
+    assembler_struct->output_info[assembler_struct->num_elements] = num;
+}
+
+static void other (assembler_info *assembler_struct, cmd_index cmd_id) {
+
+    if ((assembler_struct->num_elements + 2) > assembler_struct->text_size) { reallocate_memory (assembler_struct); }
+
+    assembler_struct->output_info[assembler_struct->num_elements] = cmd_id;
+}
+
+void dump_assembler (assembler_info *assembler_struct, bool sizes, bool cmd, bool array) {
 
     if (sizes) {
 
@@ -84,29 +109,4 @@ void assembler_destructor (assembler_info *assembler_struct) {
     fclose (assembler_struct->file_output);
     assembler_struct->file_output = NULL;
     free (assembler_struct->output_info);
-}
-
-void push (assembler_info *assembler_struct) {
-
-    elem_type num;
-    fscanf (assembler_struct->file_input, "%d", &num);
-
-    if ((assembler_struct->num_elements + 3) > assembler_struct->text_size) { reallocate_memory (assembler_struct); }
-
-    assembler_struct->output_info[assembler_struct->num_elements] = PUSH;
-    assembler_struct->num_elements++;
-    assembler_struct->output_info[assembler_struct->num_elements] = num;
-}
-
-void other (assembler_info *assembler_struct, cmd_index cmd_id) {
-
-    if ((assembler_struct->num_elements + 2) > assembler_struct->text_size) { reallocate_memory (assembler_struct); }
-
-    assembler_struct->output_info[assembler_struct->num_elements] = cmd_id;
-}
-
-void reallocate_memory (assembler_info *assembler_struct) {
-
-    assembler_struct->text_size *= 10;
-    assembler_struct->output_info = (elem_type *)realloc (assembler_struct->output_info, assembler_struct->text_size * sizeof (elem_type));
 }
